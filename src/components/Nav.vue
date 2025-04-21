@@ -41,6 +41,7 @@
                         <i class="w-[17px] h-[17px] bg-[#DB4444] rounded-full absolute top-[-10px] right-[-5px] text-center !leading-[17px] text-[#fff] text-[12px] font-poppins">2</i>
                     </router-link>
                     <router-link to="/profile"><i class="fa-regular fa-user text-[18px] hover:text-white w-[32px] h-[32px] hover:bg-[#DB4444] rounded-full text-center !leading-[32px]"></i></router-link>
+                    <i @click="handleLogout" v-if="user" title="logout" class="fa-solid fa-right-from-bracket"></i>
                 </div>
             </div>
         </div>
@@ -49,11 +50,6 @@
 
 <script setup>
 import logo from '@/assets/images/logo.png'
-import store from '@/store';
-
-import { computed } from 'vue';
-
-const user = computed(() => store.state.user);
-
-    
+import useAuth from '@/composables/useAuth'
+const { user, isAuthenticated, handleLogout } = useAuth()
 </script>

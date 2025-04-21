@@ -7,7 +7,7 @@
                         <li class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a href="">My Account</a></li>
                         <li class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a href="">My Order</a></li>
                         <li class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a href="">My Wishlist</a></li>
-                        <li v-if="user" @click="handleLogout"  class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a>Logout</a></li>
+                        <li v-if="user" @click="handleLogout"  class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a class="cursor-pointer">Logout</a></li>
                         
                     </ul>
                 </div>
@@ -64,21 +64,7 @@
 </style>
 
 <script setup>
-import store from '@/store'
-import axios from 'axios'
-import { computed } from 'vue';
+import useAuth from '@/composables/useAuth'
 
-const user = computed(() => store.state.user);
-const isAuthenticated = computed(() => store.state.isAuthenticated);
-
-
-const handleLogout = async () => {
-  try {
-    await axios.post('http://127.0.0.1:8000/api/customer/logout');
-  } catch (error) {
-    console.log('Ignore error during logout:', error);
-  } finally {
-    store.dispatch('logout'); // logout in Vuex no matter what
-  }
-};
+const { user, isAuthenticated, handleLogout } = useAuth()
 </script>
