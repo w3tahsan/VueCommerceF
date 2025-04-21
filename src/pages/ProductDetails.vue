@@ -24,6 +24,7 @@
                 </div>
                 <div class="w-[40%]">
                     <div class="border-[#000] border-b pb-6">
+                        <h2>User, <strong>{{ user.name}}</strong></h2>
                         <h3 class="text-[#000000] text-[24px] font-poppins font-semibold leading-6">Havic HV G-92 Gamepad</h3>
                         <div class="flex pb-4 pt-4 space-x-2">
                             <div class="space-x-1">
@@ -131,8 +132,9 @@ wooden canoes in Valley Park, Missouri ceased in 1978.</p>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 const sizes = ref(null)
+const user = computed(() => store.state.user);
 
 const count = ref(1);
 
@@ -152,6 +154,7 @@ onMounted(() => {
 import thumb from '@/assets/images/thumb.png'
 import preview from '@/assets/images/preview.png'
 import newarrival from '../assets/images/new.png'
+import store from '@/store';
 
 
 const increment = () => {

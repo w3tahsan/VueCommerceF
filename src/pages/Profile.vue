@@ -7,14 +7,15 @@
                         <li class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a href="">My Account</a></li>
                         <li class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a href="">My Order</a></li>
                         <li class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a href="">My Wishlist</a></li>
-                        <li v-if="isAuthenticated" class="text-[16px] text-[#DB4444] font-poppins font-medium leading-6"><a href="">Logout</a></li>
+                        <li v-if="user" @click="handleLogout"  class="text-[16px] text-[#000] font-poppins font-medium leading-6"><a>Logout</a></li>
                         
                     </ul>
                 </div>
                 <div class="w-[80%] shadow-profile">
                     <div class="py-10 px-20">
+                        <h1 class="pb-4 text-3xl" v-if="user">Welcome, <strong>{{ user.name}}</strong></h1>
                         <h2 class="text-[20px] text-[#DB4444] font-medium leading-7 font-poppins">Edit Your Profile</h2>
-
+                        
                         <form action="" class="pt-4">
                             <div class="flex w-full gap-x-12 pb-6">
                                 <div class="flex w-1/2 flex-col space-y-2">
@@ -63,10 +64,21 @@
 </style>
 
 <script setup>
-import store from '@/store';
+import store from '@/store'
+import axios from 'axios'
 import { computed } from 'vue';
 
-const isAuthenticated = computed(() => {
-  return store.getters.authStatus
- })
+const user = computed(() => store.state.user);
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+
+
+const handleLogout = async () => {
+  try {
+    await axios.post('http://127.0.0.1:8000/api/customer/logout');
+  } catch (error) {
+    console.log('Ignore error during logout:', error);
+  } finally {
+    store.dispatch('logout'); // logout in Vuex no matter what
+  }
+};
 </script>

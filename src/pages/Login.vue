@@ -54,21 +54,21 @@ const login = () => {
         axios.post('http://127.0.0.1:8000/api/customer/login', {
             email: email.value,
             password: password.value,
-        })
-        .then(response => {
-            const status = true;
-            const token = response.data.token;
-            store.dispatch('SetAuthStatus', status)  
-            store.dispatch('SetCustomerToken', token)  
-            router.push({name: 'profile'})
-        })
+            })
+            .then(response => {
+                const token = response.data.token;
+                store.dispatch('SetCustomerToken', token)
+                .then(() => {
+                    store.dispatch('FetchUser');
+                })
+                router.push('/profile')
+            })
         .catch(error => {
             if (error.response?.data?.errors) {
                 errors.value = error.response.data.errors
             }
         })
     });
-    
 }
 
 watch(email, () => {

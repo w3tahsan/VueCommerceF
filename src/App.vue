@@ -8,20 +8,17 @@
 <script setup>
 import Nav from './components/Nav.vue';
 import Footer from './components/Footer.vue';
-import Homepage from './pages/Homepage.vue';
+import store from './store';
+import { onMounted } from 'vue';
+import axios from 'axios';
 
-// import axios from 'axios';
+onMounted(() => {
+  const token = store.state.token;
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    store.dispatch("FetchUser");
+  }
+});
 
-// const user = Object
-
-// const userdetails = () => {
-//   axios.get('http://127.0.0.1:8000/api/customer/info')
-//     .then(response => {
-//       console.log(response);
-//     })
-//     .error(error => {
-//       console.log(error);
-//     })
-// }
 
 </script>

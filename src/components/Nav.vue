@@ -49,6 +49,11 @@
 
 <script setup>
 import logo from '@/assets/images/logo.png'
+import store from '@/store';
+
+import { computed } from 'vue';
+
+const user = computed(() => store.state.user);
 
     
 </script>
