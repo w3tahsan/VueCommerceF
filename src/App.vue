@@ -20,5 +20,15 @@ onMounted(() => {
   }
 });
 
+onMounted(() => {
+  store.dispatch('getCategories');
+});
+
+onMounted(() => {
+  store.dispatch('getProducts');
+});
+onMounted(() => {
+  store.dispatch('getNewProducts');
+});
 
 </script>

@@ -5,12 +5,12 @@
                 <h3 class="text-[36px] text-[#000] font-poppins font-semibold leading-12">Browse By Category</h3>
             </div>
             <div class="flex gap-x-7">
-                <div v-for="newArr in 6" :key="newArr" class="w-1/5">
+                <div v-for="category in categories" :key="category" class="w-1/5">
                    <div class="border-1 border-[rgba(0,0,0,0.3)]  py-6 mb-4 text-center rounded-[4px]">
                         <div class="flex justify-center pb-4">
-                            <img :src="category" alt="">
+                            <img width="50" :src="`http://127.0.0.1:8000/uploads/category/${category.category_image}`" alt="">
                         </div>
-                        <h4 class="text-[16px] text-[#000] font-poppins leading-6 font-normal">Phones</h4>
+                        <h4 class="text-[16px] text-[#000] font-poppins leading-6 font-normal">{{ category.category_name }}</h4>
                    </div>
                 </div>
             </div>
@@ -19,5 +19,9 @@
 </template>
 
 <script setup>
-    import category from '@/assets/images/category.png' 
+import { useStore } from 'vuex';
+import { computed } from 'vue';
+
+const store = useStore();
+const categories = computed(() => store.getters.categories);
 </script>

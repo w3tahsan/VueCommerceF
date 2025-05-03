@@ -10,3 +10,6 @@
     --shadow-cart: 0 5px 5px rgba(130, 130, 130, 0.1);
     --shadow-profile: 0px 0px 3px 3px rgba(130, 130, 130, 0.05);
 }
+.adad table {
+    width: 100% !important;
+}
