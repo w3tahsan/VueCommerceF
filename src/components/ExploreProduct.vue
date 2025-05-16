@@ -12,7 +12,9 @@
                             -{{ product.discount }}%
                         </div>
                    </div>
-                   <h3 class="font-poppins text-[16px] text-[#000] font-medium leading-6 pb-2"><router-link :to="`/product/details/${product.id}`">{{ product.product_name }}</router-link></h3>
+                   <h3 class="font-poppins text-[16px] text-[#000] font-medium leading-6 pb-2">
+                    <router-link :to="`/product/details/${product.id}`">{{ product.product_name }}</router-link>
+                    </h3>
                    
                    <div class="flex gap-x-2 pt-2">
                         <p class="font-poppins text-[16px] text-[#000] font-medium leading-6 space-x-3">

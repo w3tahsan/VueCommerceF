@@ -12,13 +12,13 @@
                 <div class="w-[60%]">
                     <div class="flex gap-x-8">
                         <div class="flex flex-col gap-y-4 w-[20%]">
-                            <div v-for="gallery in product_details.galleries" :key="gallery.id" class="bg-[#F5F5F5] px-6 py-3">
+                            <div v-for="gallery in product_details.galleries" :key="gallery.id" class="bg-[#F5F5F5] px-6 py-3 cursor-pointer" @click="selectedImage = `http://127.0.0.1:8000/uploads/product/gallery/${gallery.gallery}`">
                                 <img :src="`http://127.0.0.1:8000/uploads/product/gallery/${gallery.gallery}`" alt="">
                             </div>
                         </div>
                         <div class="w-[80%]">
                             <div class="bg-[#F5F5F5] px-6 py-16">
-                                <img :src="`http://127.0.0.1:8000/uploads/product/${product_details.preview}`" alt="">
+                                <img :src="selectedImage" alt="">
                             </div>
                         </div>
                     </div>
@@ -35,7 +35,7 @@
                             </div>
                         </div>
                         <h3 class="text-[#000000] text-[24px] font-normal font-poppins leading-6 pb-6 "> 
-                           <span>{{ selectedInventory && selectedInventory.discount_price ? '$' + selectedInventory.discount_price : product_details.rel_to_inventories[0].discount_price }}</span>
+                           <span>${{ selectedInventory && selectedInventory.discount_price ? + selectedInventory.discount_price : product_details.rel_to_inventories[0].discount_price }}</span>
                         </h3>
                         <p class="text-[#000] text-[14px] font-normal font-poppins leading-5 pr-22">{{ product_details.short_desp }}</p>
                     </div>
@@ -159,6 +159,8 @@ const decrement = () => {
     }
 };
 
+
+
 // Fetch the product details
 onMounted(async () => {
   const productId = route.params.id;
@@ -178,11 +180,14 @@ onMounted(async () => {
 });
 
 const loading = ref(true)
+const selectedImage = ref('');
 onMounted(async () => {
-  const productId = route.params.id;
-  loading.value = true;
-  await store.dispatch('Get_Details', productId);
-  loading.value = false;
+    const productId = route.params.id;
+    loading.value = true;
+    await store.dispatch('Get_Details', productId);
+    const previewImg = store.getters.product_details.preview;
+    selectedImage.value = `http://127.0.0.1:8000/uploads/product/${previewImg}`;
+    loading.value = false;
 });
 
 const uniqueColors = computed(() => {
@@ -242,6 +247,8 @@ const selectedInventory = computed(() => {
 //   console.log('Selected Size:', selectedSize.value);
 //   console.log('Matched Inventory:', selectedInventory.value);
 // });
+
+
 
 </script>
 <style scoped>

@@ -124,7 +124,4 @@ const update = () => {
     })
 }
 
-
-
-
 </script>
