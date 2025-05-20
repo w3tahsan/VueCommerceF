@@ -8,6 +8,7 @@
                 <div class="h-20 bg-gray-100 rounded w-full"></div>
             </div>
             <div v-else>
+                <form @submit.prevent="cart">
                 <div class="flex gap-x-[70px]">
                 <div class="w-[60%]">
                     <div class="flex gap-x-8">
@@ -45,11 +46,17 @@
                         </div>
                         <div class="flex space-x-2">
                             <div v-for="color in uniqueColors" :key="color.rel_to_color.id">
-                                <label>
+                                <label v-if="color.rel_to_color.color_name != 'NA'">
                                     <input v-model="selectedColor" type="radio" name="color" :value="color.rel_to_color.id" :style="{background:color.rel_to_color.color_name}">
+                                </label>
+                                <label v-else class="relative no-color">
+                                    <span>NA</span>
                                 </label>
                             </div>
                         </div>
+                    </div>
+                    <div>
+                        <strong v-if="errors.color_id" class="text-red-500">{{ errors.color_id[0] }}</strong>
                     </div>
                     <div class="flex gap-x-6 items-center pt-6 sizes">
                         <div>
@@ -59,18 +66,20 @@
                             <label v-for="size in uniqueSizes" :key="size.rel_to_size.id" class="relative">
                                 <input type="radio" name="size" :value="size.rel_to_size.id" v-model="selectedSize">
                                 <span class="text-[#000] text-[14px] -translate-[50%] absolute font-poppins left-[50%] top-[50%]">{{ size.rel_to_size.size_name }}</span>
-                                
                             </label>
                         </div>
+                    </div>
+                    <div>
+                        <strong v-if="errors.size_id" class="text-red-500">{{ errors.size_id[0] }}</strong>
                     </div>
                     <div class="flex items-center w-full pt-6 gap-x-4">
                         <div class="quantity w-[40%] ">
                             <div class="flex items-center">
-                                <button @click="decrement" class="border border-[rgba(0,0,0,0.5)] px-4 py-[10px] rounded-s-lg hover:bg-[#DB4444] hover:text-[#fff] hover:border-[#DB4444]">
+                                <button type="button" @click="decrement" class="border border-[rgba(0,0,0,0.5)] px-4 py-[10px] rounded-s-lg hover:bg-[#DB4444] hover:text-[#fff] hover:border-[#DB4444]">
                                     <i class="fa-solid fa-minus"></i>
                                 </button>
                                 <input type="text" class="text-[20px] font-medium leading-7 font-poppins text-[#000] px-8 py-2 w-full text-center border-y border-[rgba(0,0,0,0.5)]" :value="count">
-                                <button @click="increment" class="border border-[rgba(0,0,0,0.5)] px-4 py-[10px] rounded-e-lg hover:bg-[#DB4444] hover:text-[#fff] hover:border-[#DB4444]">
+                                <button @click="increment" type="button" class="border border-[rgba(0,0,0,0.5)] px-4 py-[10px] rounded-e-lg hover:bg-[#DB4444] hover:text-[#fff] hover:border-[#DB4444]">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>
@@ -84,6 +93,7 @@
                     </div>
                 </div>
             </div>
+            </form>
             <div class="pt-[90px]">
                 <div class="adad" v-html="product_details.long_desp"></div>
 
@@ -133,6 +143,7 @@
 import { useStore } from 'vuex';
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import Swal from 'sweetalert2'
 
 const store = useStore();
 const route = useRoute();
@@ -147,6 +158,9 @@ const count = ref(1);
 import thumb from '@/assets/images/thumb.png';
 import preview from '@/assets/images/preview.png';
 import newarrival from '@/assets/images/new.png';
+import axios from 'axios';
+
+
 
 // Quantity increment/decrement
 const increment = () => {
@@ -187,6 +201,25 @@ onMounted(async () => {
     await store.dispatch('Get_Details', productId);
     const previewImg = store.getters.product_details.preview;
     selectedImage.value = `http://127.0.0.1:8000/uploads/product/${previewImg}`;
+
+    if (product_details.value.rel_to_inventories) {
+        const defaultSize = product_details.value.rel_to_inventories.find(
+            (item) => item.rel_to_size?.size_name === 'NA'
+        );
+        if (defaultSize) {
+            selectedSize.value = defaultSize.rel_to_size.id;
+        }
+    }
+
+    if (product_details.value.rel_to_inventories) {
+        const defaultColor = product_details.value.rel_to_inventories.find(
+        (item) => item.rel_to_color?.color_name === 'NA'
+    )
+    if (defaultColor) {
+        selectedColor.value = defaultColor.rel_to_color.id;
+    }
+  }
+    
     loading.value = false;
 });
 
@@ -208,6 +241,8 @@ const uniqueSizes = computed(() => {
       return true;
     });
 });
+
+
 
 const selectedColor = ref(null);
 const selectedSize = ref(null);
@@ -242,11 +277,44 @@ const selectedInventory = computed(() => {
   return inventories[0] || null;
 });
 
+
 // watch([selectedColor, selectedSize], () => {
 //   console.log('Selected Color:', selectedColor.value);
 //   console.log('Selected Size:', selectedSize.value);
 //   console.log('Matched Inventory:', selectedInventory.value);
 // });
+
+
+const customer_id = ref('')
+const productid = ref('')
+const color_id = ref('')
+const size_id = ref('')
+const quantity = ref('')
+const errors = ref({});
+
+const cart = () => {
+    axios.post('http://127.0.0.1:8000/api/add/to/cart', {
+        customer_id:user.value.id,
+        productid:product_details.value.id,
+        color_id:selectedColor.value,
+        size_id:selectedSize.value,
+        quantity:count.value
+    })
+    .then(response => {
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: response.data.success,
+            showConfirmButton: false,
+            timer: 1500
+        });
+        console.log(response);
+        
+    })
+    .catch(error => {
+        errors.value = error.response.data.errors;
+    })
+}
 
 
 
@@ -306,5 +374,19 @@ const selectedInventory = computed(() => {
   .sizes input[type='radio']:checked+span{
     color: #fff;
   }
+
+
+  .no-color span{
+    margin: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: #DB4444;
+    display: inline-block;
+    line-height: 32px;
+    text-align: center;
+    color: #fff;
+  }
+
 
 </style>

@@ -68,8 +68,8 @@
 </template>
 
 <script setup>
+import axios from 'axios'
 import { ref, computed } from 'vue'
-
 const carts = ref([
     {
         id:1,
@@ -99,5 +99,6 @@ const decrement = (index) => {
 const subtotal = computed(()=>
     carts.value.reduce((acc, cart) => acc + cart.price * cart.quantity, 0)
 );
+
 
 </script>

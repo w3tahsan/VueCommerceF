@@ -11,6 +11,7 @@ export default createStore({
     Newproducts: [],
     Product_Details: [],
     Tags: [],
+    carts: [],
   },
   mutations: {
     UpdateToken(state, token) {
@@ -44,6 +45,9 @@ export default createStore({
     },
     SET_TAGS(state, Tags) {
       state.Tags = Tags;
+    },
+    setCarts(state, carts) {
+      state.carts = carts;
     },
   },
   actions: {
@@ -98,6 +102,16 @@ export default createStore({
           console.log("User fetch error:", error);
         });
     },
+    getCarts({ commit }, id) {
+      return axios
+        .get(`http://127.0.0.1:8000/api/cart/${id}`)
+        .then((response) => {
+          commit("setCarts", response.data.carts);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
   getters: {
     authStatus: (state) => state.isAuthenticated,
@@ -107,5 +121,6 @@ export default createStore({
     newproducts: (state) => state.Newproducts,
     product_details: (state) => state.Product_Details,
     tags: (state) => state.Tags,
+    carts: (state) => state.carts,
   },
 });
