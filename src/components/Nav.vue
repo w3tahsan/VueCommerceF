@@ -39,7 +39,7 @@
                 <div class="w-[15%] text-right space-x-4" v-if="!['login', 'register'].includes($route.name)">
                     <router-link to="/wishlist"><i class="fa-regular fa-heart text-[18px] hover:text-white w-[32px] h-[32px] hover:bg-[#DB4444] rounded-full text-center !leading-[32px]"></i></router-link>
                     <router-link to="/cart" class="relative"><i class="fa-solid fa-cart-plus text-[18px] hover:text-white w-[32px] h-[32px] hover:bg-[#DB4444] rounded-full text-center !leading-[32px]"></i>
-                        <i class="w-[17px] h-[17px] bg-[#DB4444] rounded-full absolute top-[-10px] right-[-5px] text-center !leading-[17px] text-[#fff] text-[12px] font-poppins">2</i>
+                        <i v-if="cartCount > 0" class="w-[17px] h-[17px] bg-[#DB4444] rounded-full absolute top-[-10px] right-[-5px] text-center !leading-[17px] text-[#fff] text-[12px] font-poppins">{{ cartCount }}</i>
                     </router-link>
                     <router-link to="/profile"><i class="fa-regular fa-user text-[18px] hover:text-white w-[32px] h-[32px] hover:bg-[#DB4444] rounded-full text-center !leading-[32px]"></i></router-link>
                     <i @click="handleLogout" v-if="user" title="logout" class="fa-solid fa-right-from-bracket"></i>
@@ -52,7 +52,7 @@
 <script setup>
 import logo from '@/assets/images/logo.png'
 import useAuth from '@/composables/useAuth'
-import { watch } from 'vue'
+import { watch, computed } from 'vue'
 const { user, isAuthenticated, handleLogout } = useAuth()
 import { useStore } from 'vuex'
 const store = useStore()
@@ -61,8 +61,11 @@ watch(user, (newUser) => {
   if (newUser) {
     store.dispatch('getCarts', newUser.id)
   }
-}) 
+}, { immediate: true }) // fetch on load too
+const carts = computed(() => store.getters.carts)
 
-const carts = store.state.carts
+const cartCount = computed(() => {
+  return carts.value.length
+})
 
 </script>

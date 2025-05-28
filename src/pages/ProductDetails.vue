@@ -18,8 +18,8 @@
                             </div>
                         </div>
                         <div class="w-[80%]">
-                            <div class="bg-[#F5F5F5] px-6 py-16">
-                                <img :src="selectedImage" alt="">
+                            <div class="aspect-w-1 aspect-h-1 bg-gray-100">
+                                <img :src="selectedImage" class="object-contain" />
                             </div>
                         </div>
                     </div>
@@ -155,8 +155,6 @@ const tags = computed(() => store.getters.tags);
 
 const count = ref(1);
 
-import thumb from '@/assets/images/thumb.png';
-import preview from '@/assets/images/preview.png';
 import newarrival from '@/assets/images/new.png';
 import axios from 'axios';
 
@@ -232,14 +230,42 @@ const uniqueColors = computed(() => {
       return true;
     });
 });
+
+// const uniqueSizes = computed(() => {
+//     const seen = new Set();
+//     return product_details.value.rel_to_inventories.filter(item => {
+//       const id = item.rel_to_size.id;
+//       if (seen.has(id)) return false;
+//       seen.add(id);
+//       return true;
+//     });
+// });
+
+const defaultSizes = computed(() => {
+  const seen = new Set();
+  return product_details.value.rel_to_inventories.filter(item => {
+    const sizeId = item.rel_to_size?.id;
+    if (!sizeId || seen.has(sizeId)) return false;
+    seen.add(sizeId);
+    return true;
+  });
+});
+
 const uniqueSizes = computed(() => {
-    const seen = new Set();
-    return product_details.value.rel_to_inventories.filter(item => {
-      const id = item.rel_to_size.id;
-      if (seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    });
+  if (!selectedColor.value) {
+    return defaultSizes.value;
+  }
+
+  const seen = new Set();
+  return product_details.value.rel_to_inventories.filter(item => {
+    if (item.color_id !== selectedColor.value) return false;
+
+    const sizeId = item.rel_to_size?.id;
+    if (seen.has(sizeId)) return false;
+
+    seen.add(sizeId);
+    return true;
+  });
 });
 
 
@@ -308,7 +334,8 @@ const cart = () => {
             showConfirmButton: false,
             timer: 1500
         });
-        console.log(response);
+
+        store.dispatch("getCarts", store.getters.user.id);
         
     })
     .catch(error => {
